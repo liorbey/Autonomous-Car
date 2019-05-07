@@ -1,0 +1,125 @@
+#include <Servo.h>
+int rightspeed =11;
+int rightforward =8;
+int rightbackward =9;
+int leftbackward =7;
+int leftforward =6;
+int leftspeed = 5;
+int trigPin = 12;    // Trigger
+int echoPin = 13;    // Echo
+long duration, cm, inches;
+int pos = 0;
+
+Servo myservo;
+
+void setup() {
+
+  pinMode(rightspeed, OUTPUT);
+  pinMode(rightforward, OUTPUT);
+  pinMode(rightbackward, OUTPUT);
+  pinMode(leftbackward, OUTPUT);
+  pinMode(leftforward, OUTPUT);
+  pinMode(leftspeed, OUTPUT);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+
+  Serial.begin (9600);
+
+  myservo.attach(10);
+
+}
+void stopcar() {
+  analogWrite(rightspeed, 255);
+  digitalWrite(rightforward, LOW);
+  digitalWrite(rightbackward, LOW);
+  digitalWrite(leftbackward, LOW);
+  digitalWrite(leftforward, LOW);
+  analogWrite(leftspeed, 255);   
+}
+void backward() {
+  analogWrite(rightspeed, 150);
+  digitalWrite(rightforward, LOW);
+  digitalWrite(rightbackward, HIGH);
+  digitalWrite(leftbackward, HIGH);
+  digitalWrite(leftforward, LOW);
+  analogWrite(leftspeed, 150); 
+}
+void forward() {
+  analogWrite(rightspeed, 150);
+  digitalWrite(rightforward, HIGH);
+  digitalWrite(rightbackward, LOW);
+  digitalWrite(leftforward, HIGH);
+  digitalWrite(leftbackward, LOW);
+  analogWrite(leftspeed,150);
+  Serial.print("forward");
+}
+void left() {
+  analogWrite(rightspeed, 255);
+  digitalWrite(rightforward, HIGH);
+  digitalWrite(rightbackward, LOW);
+  digitalWrite(leftbackward, LOW);
+  digitalWrite(leftforward, HIGH);
+  analogWrite(leftspeed, 100);
+}
+void right() {
+  analogWrite(rightspeed,100);
+  digitalWrite(rightforward, HIGH);
+  digitalWrite(rightbackward, LOW);
+  digitalWrite(leftbackward, LOW);
+  digitalWrite(leftforward, HIGH);
+  analogWrite(leftspeed, 255);
+}
+void spin() {
+  analogWrite(rightspeed,255);
+  digitalWrite(rightforward, HIGH);
+  digitalWrite(rightbackward, LOW);
+  digitalWrite(leftbackward, HIGH);
+  digitalWrite(leftforward, LOW);
+  analogWrite(leftspeed, 255);
+  Serial.print("spin");
+}
+float distance_detection(){
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(500);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(500);
+  digitalWrite(trigPin, LOW);
+
+  // Read the signal from the sensor: a HIGH pulse whose
+  // duration is the time (in microseconds) from the sending
+  // of the ping to the reception of its echo off of an object.
+  duration = pulseIn(echoPin, HIGH);
+
+  // Convert the time into a distance
+  cm = (duration/2) / 29.1;     
+  inches = (duration/2) / 74;
+
+  Serial.print(inches);
+  Serial.print("in, ");
+  Serial.print(cm);
+  Serial.print("cm");
+  Serial.println();
+
+  return cm;
+}
+
+void loop() {
+  for (pos = 0; pos <= 160; pos += 15) {
+    distance_detection();
+    myservo.write(pos);              
+    delay(20);
+    if (cm < 35){
+      spin(); 
+      delay(400);
+    }
+    else{
+      forward();
+    }
+  }
+  for (pos = 160; pos >= 0; pos -= 15) {
+    distance_detection();
+    myservo.write(pos);              
+    delay(20);             
+  }
+}
