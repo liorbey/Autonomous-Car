@@ -1,0 +1,15 @@
+  //this code goes into the main loop function
+  
+  digitalWrite(rightforward, HIGH);
+  digitalWrite(rightbackward, LOW);
+  digitalWrite(leftbackward, HIGH);
+  digitalWrite(leftforward, LOW);
+  delay(100)
+  analogWrite(rightspeed,155)
+  delay(100)
+  analogWrite(rightspeed,255);
+  delay(100)
+  analogWrite(leftspeed,155)
+  delay(100)
+  analogWrite(leftspeed, 255);
+  delay(100);
